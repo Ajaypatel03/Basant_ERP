@@ -14,7 +14,7 @@
                                 </div>
                                 <div class="modal-body">
                                     <form action="{{ route('customerEntries.update', $customerEntries->id) }}"
-                                        method="POST">
+                                        method="POST" enctype="multipart/form-data">
                                         @csrf
                                         @method('PUT')
 
@@ -47,6 +47,15 @@
                                             </div>
 
                                             <div class="form-group col-md-6">
+                                                <label for="image">Image</label>
+                                                <input type="file" id="image" class="form-control" name="image"
+                                                    value="{{ $customerEntries->image }}">
+
+                                                <img src="{{ asset($customerEntries->image ? 'images/' . $customerEntries->image : 'images/download.png') }}"
+                                                    alt="Customer Image" style="width:20%;">
+                                            </div>
+
+                                            <div class="form-group col-md-6">
                                                 <label for="amount_due">Amount Due</label>
                                                 <input type="text" id="amount_due" class="form-control" name="amount_due"
                                                     value="{{ $customerEntries->amount_due }}">
@@ -65,9 +74,9 @@
                                             </div>
 
                                         </div>
-                                        <button type="submit" class="btn btn-primary">Update Customer</button>
-                                        <a href="{{ route('customerEntries.index') }}" class="btn btn-primary pull-right">Go
+                                        <a href="{{ route('customerEntries.index') }}" class="btn btn-primary">Go
                                             Back</a>
+                                        <button type="submit" class="btn btn-primary pull-right">Update Customer</button>
                                     </form>
 
 

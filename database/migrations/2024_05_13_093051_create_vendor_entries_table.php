@@ -18,6 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('vendor_id');
             $table->foreign('vendor_id')->references('id')->on('vendors')->onDelete('cascade');
             $table->string('bill_no');
+            $table->string('image')->nullable();
             $table->string('amount_due')->nullable();
             $table->string('amount_paid')->nullable();
             $table->string('type')->nullable();

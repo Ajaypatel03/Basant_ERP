@@ -17,6 +17,7 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_id');
             $table->foreign('customer_id')->references('id')->on('customers')->onDelete('cascade');
             $table->string('items')->nullable();
+            $table->string('image')->nullable();
             $table->string('type')->nullable();
             $table->string('amount_due')->nullable();
             $table->string('amount_paid')->nullable();

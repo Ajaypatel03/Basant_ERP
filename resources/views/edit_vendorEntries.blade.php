@@ -13,7 +13,8 @@
                                     <h4 class="modal-title">Edit vendor Entries</h4>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{{ route('vendorEntries.update', $vendorEntries->id) }}" method="POST">
+                                    <form action="{{ route('vendorEntries.update', $vendorEntries->id) }}" method="POST"
+                                        enctype="multipart/form-data">
                                         @csrf
                                         @method('PUT')
 
@@ -52,6 +53,14 @@
                                             </div>
 
                                             <div class="form-group col-md-6">
+                                                <label for="image">Image</label>
+                                                <input type="file" id="image" class="form-control" name="image"
+                                                    value="{{ $vendorEntries->image }}">
+                                                <img src="{{ asset($vendorEntries->image ? 'images/' . $vendorEntries->image : 'images/download.png') }}"
+                                                    alt="" style="width: 20%;">
+                                            </div>
+
+                                            <div class="form-group col-md-6">
                                                 <label for="amount_due">Amount Due</label>
                                                 <input type="text" id="amount_due" class="form-control" name="amount_due"
                                                     value="{{ $vendorEntries->amount_due }}">
@@ -64,8 +73,8 @@
                                             </div>
 
                                         </div>
-                                        <button type="submit" class="btn btn-primary">Update Vendor</button>
-                                        <a href="{{ route('vendorEntries.index') }}" class="btn btn-primary pull-right">Go
+                                        <button type="submit" class="btn btn-primary pull-right">Update Vendor</button>
+                                        <a href="{{ route('vendorEntries.index') }}" class="btn btn-primary">Go
                                             Back</a>
                                     </form>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Vendor;
 use App\Models\VendorEntry;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
 
 class VendorEntriesController extends Controller
 {
@@ -33,11 +34,18 @@ class VendorEntriesController extends Controller
      */
     public function store(Request $request)
     {
+        $imageName = null ;
+        if ($request->hasFile('image')) {
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('images'), $imageName);
+        }
+
         VendorEntry::create([
             'date'=>$request->input('date'),
             'due_date'=>$request->input('due_date'),
             'vendor_id'=>$request->input('vendor_id'),
             'bill_no'=>$request->input('bill_no'),
+            'image'=> $imageName,
             'amount_due'=>$request->input('amount_due'),
             'amount_paid'=>$request->input('amount_paid'),
             'type'=>$request->input('type'),
@@ -71,11 +79,24 @@ class VendorEntriesController extends Controller
     {
         $vendorEntry = VendorEntry::findOrFail($id);
 
+        if ($request->hasFile('image')) {
+            $imagePath = public_path('images/' . $vendorEntry->image);
+            // Check if the image exists and delete it
+            if (File::exists($imagePath)) {
+                File::delete($imagePath);
+            }
+            // Storage::delete('public/' . $product->image);
+            $imageName = time().'.'.$request->image->extension();
+            $request->image->move(public_path('images'), $imageName);
+            $vendorEntry->image = $imageName;
+        }
+
         $vendorEntry->update([
             'date' => $request->input('date'),
             'due_date' => $request->input('due_date'),
             'vendor_id' => $request->input('vendor_id'),
             'bill_no' => $request->input('bill_no'),
+            'image' => $vendorEntry->image,
             'amount_due' => $request->input('amount_due'),
             'amount_paid' => $request->input('amount_paid'),
             'type'=>$request->input('type'),

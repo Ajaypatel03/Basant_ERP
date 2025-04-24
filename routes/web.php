@@ -27,7 +27,7 @@ Route::group(['middleware' => 'auth'], function () {
     
     Route::any('/customerReport', [CustomerEntriesController::class, 'customerReportIndex'])->name('customerReport.index');
     Route::post('/customerReport', [CustomerEntriesController::class, 'customerReportIndex'])->name('customerReport.index');
-
+Route::get('generatePDF', [CustomerEntriesController::class, 'generatePDF']);
 
     Route::any('/vendorReport', [VendorEntriesController::class,'vendorReportIndex'])->name('vendorReport.index');
     Route::post('/vendorReport', [VendorEntriesController::class,'vendorReportIndex'])->name('vendorReport.index');

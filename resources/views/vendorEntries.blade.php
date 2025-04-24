@@ -35,10 +35,10 @@
                                     <h4 class="modal-title">Add Vendor Entries</h4>
                                 </div>
                                 <div class="modal-body">
-                                    <form action="{{ route('vendorEntries.store') }}" method="POST">
+                                    <form action="{{ route('vendorEntries.store') }}" method="POST"
+                                        enctype="multipart/form-data">
                                         @csrf
                                         <div class="row">
-
                                             <div class="form-group col-md-6">
                                                 <label for="date">Date</label>
                                                 <input type="date" id="date" class="form-control" name="date">
@@ -59,11 +59,15 @@
                                                 </select>
                                             </div>
 
-
                                             <div class="form-group col-md-6">
                                                 <label for="bill_no">Bill No.</label>
                                                 <input type="text" id="bill_no" class="form-control" name="bill_no"
                                                     placeholder="Abc123">
+                                            </div>
+
+                                            <div class="form-group col-md-6">
+                                                <label for="image">Image</label>
+                                                <input type="file" id="image" class="form-control" name="image">
                                             </div>
 
                                             <div class="form-group col-md-6">
@@ -83,7 +87,6 @@
                                                 <input type="text" id="type" class="form-control" name="type"
                                                     placeholder="Cash/Online">
                                             </div>
-
                                         </div>
                                 </div>
                                 <div class="modal-footer">
@@ -92,12 +95,38 @@
                                     <button type="submit" class="btn btn-primary">Save changes</button>
                                 </div>
                                 </form>
-
                             </div>
                             <!-- /.modal-content -->
                         </div>
                         <!-- /.modal-dialog -->
                     </div>
+
+                    <!-- Image Preview Modal -->
+                    <div class="modal fade" id="imageModal" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="imageModalLabel">Image View</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body text-center">
+                                    @foreach ($vendorEntries as $entry)
+                                        @if ($entry->image)
+                                            <img src="{{ asset('images/' . $entry->image) }}" alt="Vendor Image"
+                                                style="width: 100%;">
+                                        @else
+                                            <img src="{{ asset('images/download.png') }}" alt="Default Image"
+                                                style="width: 100%;">
+                                        @endif
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="box-body">
                         <div id="example2_wrapper" class="dataTables_wrapper form-inline dt-bootstrap">
                             <div class="row">
@@ -106,8 +135,8 @@
                             </div>
                             <div class="row">
                                 <div class="col-sm-12">
-                                    <table id="example2" class="table table-bordered table-hover dataTable" role="grid"
-                                        aria-describedby="example2_info">
+                                    <table id="example2" class="table table-bordered table-hover dataTable"
+                                        role="grid" aria-describedby="example2_info">
                                         <thead>
                                             <tr role="row">
                                                 <th>Serial No.</th>
@@ -115,6 +144,7 @@
                                                 <th>Due Date</th>
                                                 <th>Vendor Name</th>
                                                 <th>Bill No.</th>
+                                                <th>Image</th>
                                                 <th>Amount Due</th>
                                                 <th>Amount Paid</th>
                                                 <th>Payment Type</th>
@@ -136,16 +166,23 @@
                                                         <td>{{ $vendorEntry->due_date }}</td>
                                                         <td>{{ $vendorEntry->vendor->v_name ?? 'N/A' }}</td>
                                                         <td>{{ $vendorEntry->bill_no }}</td>
+                                                        <td class="text-center" style="width: 10%;">
+                                                            <img src="{{ asset($vendorEntry->image ? 'images/' . $vendorEntry->image : 'images/download.png') }}"
+                                                                alt="Vendor Image" style="width: 100%; cursor: pointer;"
+                                                                data-toggle="modal" data-target="#imageModal"
+                                                                data-image="{{ asset($vendorEntry->image ? 'images/' . $vendorEntry->image : 'images/download.png') }}">
+                                                        </td>
                                                         <td class="text-red text-right">₹{{ $vendorEntry->amount_due }}
                                                         </td>
                                                         <td class="text-green text-right">
                                                             ₹{{ $vendorEntry->amount_paid ?? '-' }}</td>
                                                         <td>{{ $vendorEntry->type }}</td>
                                                         <td
-                                                            style=" display:flex; justify-content:center;align-items:center">
+                                                            style="display:flex; justify-content:center;align-items:center">
                                                             <a href="{{ route('vendorEntries.edit', $vendorEntry->id) }}"
-                                                                class="text-info"><span
-                                                                    class="fa fa-pencil text-center"></span></a>
+                                                                class="text-info">
+                                                                <span class="fa fa-pencil text-center"></span>
+                                                            </a>
                                                             <form method="POST"
                                                                 action="{{ route('vendorEntries.destroy', $vendorEntry->id) }}"
                                                                 class="inner">
@@ -156,7 +193,6 @@
                                                                             class="fa fa-trash"></span></a></button>
                                                             </form>
                                                         </td>
-
                                                     </tr>
                                                     @php $serial++ @endphp
                                                 @endforeach
@@ -164,15 +200,11 @@
                                         </tbody>
                                         <tfoot>
                                             <tr>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
-                                                <th></th>
+                                                <th colspan="6"></th>
                                                 <th>Total Amount Due: <span class="text-red">₹{{ $totalAmountDue }}</span>
                                                 </th>
                                                 <th>Total Amount Paid: <span
-                                                        class="text-green">₹{{ $totalAmountPaid }}</span> </th>
+                                                        class="text-green">₹{{ $totalAmountPaid }}</span></th>
                                                 <th></th>
                                             </tr>
                                         </tfoot>
@@ -180,12 +212,8 @@
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-sm-5">
-
-                                </div>
-                                <div class="col-sm-7">
-
-                                </div>
+                                <div class="col-sm-5"></div>
+                                <div class="col-sm-7"></div>
                             </div>
                         </div>
                     </div>
@@ -196,4 +224,13 @@
             </div>
             <!-- /.row -->
     </section>
+
+    <script>
+        $('#imageModal').on('show.bs.modal', function(event) {
+            var button = $(event.relatedTarget); // Button that triggered the modal
+            var imageUrl = button.data('image'); // Extract info from data-* attributes
+            var modal = $(this);
+            modal.find('.modal-body img').attr('src', imageUrl);
+        });
+    </script>
 @endsection
